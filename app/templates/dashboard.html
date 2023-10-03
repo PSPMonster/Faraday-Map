@@ -1,0 +1,475 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAcaKtIe36pMGHlyMJPcPEY3fi0Szh6S90&libraries=places"></script> -->
+    <link rel="icon" type="image/x-icon" href="https://faraday.com.pl/wp-content/uploads/2023/01/cropped-293657772_565675205229534_399092921984716634_n-1-32x32.png">
+    <script src=" https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js "></script>
+  <link href=" https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css " rel="stylesheet">
+
+    <title>Mapa</title>
+    <style>
+      .modal {
+        transition: opacity 0.25s ease;
+      }
+      body.modal-active {
+        overflow-x: hidden;
+        overflow-y: hidden !important;
+      }
+
+      html {
+        overflow: hidden !important;
+      }
+
+      .pac-container {
+        box-shadow: none;
+        /* border-color: rgb(79, 70, 229); */
+        border-right: 1px solid rgb(79, 70, 229);
+        border-bottom: 1px solid rgb(79, 70, 229);
+        border-left: 1px solid rgb(79, 70, 229);
+      }
+
+      body > div > div:nth-child(1) > div {
+        height: 100vh !important;
+        padding-bottom: 0 !important;
+      }
+
+    </style>
+    {% tailwind_css %}
+
+  </head>
+
+  <body class="w-screen">
+    <nav class="bg-gray-800 mobile-menu static w-full top-0 z-50">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex h-16 items-center justify-center">
+          <div class="flex items-center">
+            <!-- <div class="flex-shrink-0">
+            <img class="h-8 w-8" src="https://www.svgrepo.com/show/421771/energy-flash-lighning.svg" alt="logo">
+          </div> -->
+            <div class="hidden md:block">
+              <div class="ml-10 flex items-baseline space-x-4">
+                <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                <a href="#" class="bg-gray-900 text-white px-3 py-2 rounded-md
+                  text-sm font-medium" aria-current="page">Mapa</a>
+
+                <a href="{% url 'klienci' %}" class="text-gray-300 hover:bg-gray-700
+                  hover:text-white px-3 py-2 rounded-md text-sm font-medium">Klienci</a>
+                <a href="#" class="text-gray-300 hover:bg-gray-700
+                  hover:text-white px-3 py-2 rounded-md text-sm font-medium">Kalendarz</a>
+                <a href="#" class="text-gray-300 hover:bg-gray-700
+                  hover:text-white px-3 py-2 rounded-md text-sm font-medium">Raporty</a>
+                <a href="{% url 'wyloguj' %}" class="text-gray-300 border-none bg-indigo-600 border
+                 hover:bg-indigo-800 ease-out duration-300
+                  hover:text-white px-3 py-2 text-sm font-medium">Wyloguj się</a>
+              </div>
+            </div>
+          </div>
+          <!-- <div class="hidden md:block">
+          <div class="ml-4 flex items-center md:ml-6">
+            <button type="button" class="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+              <span class="sr-only">View notifications</span>
+            
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" class="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+                
+            </button>
+          </div>
+        </div> -->
+          <div class="-mr-2 flex md:hidden">
+            <!-- Mobile menu button -->
+            <button type="button" class="mobile-menu-button inline-flex
+              items-center justify-center rounded-md bg-gray-800 p-2
+              text-gray-400 hover:bg-gray-700 hover:text-white
+              focus:outline-none focus:ring-2 focus:ring-white
+              focus:ring-offset-2 focus:ring-offset-gray-800"
+              aria-controls="mobile-menu" aria-expanded="false">
+              <span class="sr-only">Open main menu</span>
+
+              <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75
+                  6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+
+                <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6
+                    18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile menu, show/hide based on menu state. -->
+          <div class="md:hidden" id="mobile-menu">
+            <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+              <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+              <a href="#" class="bg-gray-900 text-white block px-3 py-2
+                rounded-md text-base font-medium" aria-current="page">Mapa</a>
+              <a href="/klienci" class="text-gray-300 hover:bg-gray-700
+                hover:text-white block px-3 py-2 rounded-md text-base
+                font-medium">Klienci</a>
+
+              <a href="#" class="text-gray-300 hover:bg-gray-700
+                hover:text-white block px-3 py-2 rounded-md text-base
+                font-medium">Kalendarz</a>
+
+              <a href="#" class="text-gray-300 hover:bg-gray-700
+                hover:text-white block px-3 py-2 rounded-md text-base
+                font-medium">Raporty</a>
+
+              <a href="{% url 'wyloguj' %}" class="text-gray-300 bg-indigo-800
+              hover:text-white block px-3 py-2 rounded-md text-base
+              font-medium">Wyloguj się</a>
+            </div>
+          </div>
+        </nav>
+
+
+        <div class="fixed w-screen">
+          {{map|safe}}
+          <div>
+            <div class="bg-gray-400 z-0 h-screen">
+              {% if user_profile.permission == 1 %}
+              <div class="absolute child right-0 top-0 flex z-10">
+                <p class="text-end absolute top-0 right-0">
+                  <button class="modal-open bg-indigo-600 border
+                    border-gray-500 hover:bg-indigo-800 ease-out duration-300
+                    drop-shadow-xl text-white
+                    font-bold py-2 px-2 text-clip mt-2 mr-2">Dodaj klienta</button>
+                  <!--Modal-->
+                  <div class="modal opacity-0 pointer-events-none fixed w-full
+                    h-full top-0 left-0 flex items-center justify-center">
+                    <div class="modal-overlay absolute w-full h-full bg-gray-900
+                      opacity-50"></div>
+
+                    <div class="modal-container bg-white w-11/12 md:max-w-md
+                      mx-auto rounded shadow-lg z-50">
+
+                      <div class="modal-close absolute top-0 right-0
+                        cursor-pointer flex flex-col items-center mt-4 mr-4
+                        text-white text-sm z-50">
+                        <svg class="fill-current text-white"
+                          xmlns="http://www.w3.org/2000/svg" width="18"
+                          height="18" viewBox="0 0 18 18">
+                          <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47
+                            4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47
+                            1.06-1.06L10.06 9z"></path>
+                        </svg>
+                        <span class="text-sm">(Esc)</span>
+                      </div>
+
+                      <!-- Add margin if you want to see some of the overlay behind the modal-->
+                      <div class="modal-content py-4 text-left px-6">
+                        <!--Title-->
+                        <div class="flex justify-between items-center pb-2">
+                          <p class="text-1xl font-bold">Dodaj klienta!</p>
+                          <div class="modal-close cursor-pointer z-50">
+                            <svg class="fill-current text-black"
+                              xmlns="http://www.w3.org/2000/svg" width="18"
+                              height="18" viewBox="0 0 18 18">
+                              <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47
+                                3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9
+                                10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                            </svg>
+                          </div>
+                        </div>
+
+                        <!--Body-->
+                        <div class="mt-10 sm:mt-0">
+                          <div class="md:grid md:grid-cols-2 md:gap-4">
+
+                            <div class="mt-2 md:col-span-2 md:mt-0">
+                              <form action="" method="POST" id="form">
+                                {% csrf_token %}
+                                <div class="overflow-hidden shadow
+                                  sm:rounded-md">
+                                  <div class="bg-white px-4 py-5 sm:p-6">
+                                    <div class="grid grid-cols-6 gap-6">
+                                      <!-- <div class="col-span-6 sm:col-span-3">
+                                        <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+                                        <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                      </div>
+                        
+                                      <div class="col-span-6 sm:col-span-3">
+                                        <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+                                        <input type="text" name="last-name" id="last-name" autocomplete="family-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                      </div> -->
+                                      <div class="col-span-6">
+                                        <label for="full-name" class="block
+                                          text-sm font-medium text-gray-700">Imię
+                                          i Nazwisko</label>
+                                        <input type="text" name="full-name"
+                                          id="full-name"
+                                          autocomplete="full-name" class="mt-1
+                                          block w-full rounded-md
+                                          border-gray-300 shadow-sm
+                                          focus:border-indigo-500
+                                          focus:ring-indigo-500 sm:text-sm
+                                          ease-out duration-300">
+                                      </div>
+
+                                      <div class="col-span-6">
+                                        <label for="installation" class="block
+                                          text-sm font-medium text-gray-700">Instalacja</label>
+                                        <input type="text" name="installation"
+                                          id="installation"
+                                          class="mt-1 block w-full rounded-md
+                                          border-gray-300 shadow-sm
+                                          focus:border-indigo-500
+                                          focus:ring-indigo-500 sm:text-sm
+                                          ease-out duration-300">
+                                        <div class="flex mt-1">
+                                          <div class="flex items-center mr-4">
+                                            <input id="inline-radio"
+                                              type="radio" value="FW"
+                                              name="installation-type"
+                                              class="w-4 h-4 text-indigo-600
+                                              bg-gray-100 border-gray-30
+                                              focus:ring-1 dark:bg-gray-700
+                                              dark:border-gray-600">
+                                            <label for="inline-radio"
+                                              class="ml-2 text-sm font-medium
+                                              text-gray-900 dark:text-gray-300
+                                              ease-out duration-300">Fotowoltaika</label>
+                                          </div>
+                                          <div class="flex items-center mr-4">
+                                            <input id="inline-radio"
+                                              type="radio" value="PC"
+                                              name="installation-type"
+                                              class="w-4 h-4 text-indigo-600
+                                              bg-gray-100 border-gray-30
+                                              focus:ring-1 dark:bg-gray-700
+                                              dark:border-gray-600">
+                                            <label for="inline-radio"
+                                              class="ml-2 text-sm font-medium
+                                              text-gray-900 dark:text-gray-300
+                                              ease-out duration-300">Pompa
+                                              Ciepła</label>
+                                          </div>
+                                          <div class="flex items-center mr-4">
+                                            <input id="inline-radio"
+                                              type="radio" value="FWPC"
+                                              name="installation-type"
+                                              class="w-4 h-4 text-indigo-600
+                                              bg-gray-100 border-gray-30
+                                              focus:ring-1 dark:bg-gray-700
+                                              dark:border-gray-600">
+                                            <label for="inline-radio"
+                                              class="ml-2 text-sm font-medium
+                                              text-gray-900 dark:text-gray-300
+                                              ease-out duration-300">Obie</label>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <div class="col-span-6">
+                                        <label for="installation-date" class="block
+                                          text-sm font-medium text-gray-700">Data instalacji</label>
+                                        <input type="text" name="installation-date"
+                                          id="installation-date" class="mt-1
+                                          block w-full rounded-md
+                                          bg-gray-500
+                                          border-gray-300 shadow-sm
+                                          focus:border-indigo-500
+                                          focus:ring-indigo-500 sm:text-sm
+                                          ease-out duration-300"
+                                          placeholder="np. 03-2023"
+                                          >
+                                      </div>
+
+
+                                      <div class="col-span-6">
+                                        <label for="street-address" class="block
+                                          text-sm font-medium text-gray-700">Adres</label>
+                                        <input id="street-address" type="text" name="street-address"
+                                          id="street-address"
+                                          class="mt-1 block w-full rounded-md
+                                          border-gray-300 shadow-sm
+                                          focus:border-indigo-500
+                                          focus:ring-indigo-500 sm:text-sm
+                                          ease-out duration-300" required
+                                          >
+                                      </div>
+
+
+                                      <div class="col-span-6">
+                                        <label for="phone-number" class="block
+                                          text-sm font-medium text-gray-700">Telefon</label>
+                                        <input type="text" name="phone-number"
+                                          id="phone-number"
+                                          class="mt-1 block w-full rounded-md
+                                          border-gray-300 shadow-sm
+                                          focus:border-indigo-500
+                                          focus:ring-indigo-500 sm:text-sm
+                                          ease-out duration-300">
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="bg-gray-50 px-4 py-3 text-right
+                                    sm:px-6">
+                                    <!-- <button type="button" class="modal-close inline-flex
+                                      justify-center rounded-md border
+                                      border-transparent bg-indigo-600 py-2 px-4
+                                      text-sm font-medium text-white shadow-sm
+                                      hover:bg-indigo-700 focus:outline-none
+                                      focus:ring-2 focus:ring-indigo-500
+                                      focus:ring-offset-2"
+                                      onclick="clearForm()">Wyczyść</button> -->
+                                    <button type="button" class="modal-close inline-flex
+                                      justify-center rounded-md border
+                                      border-transparent bg-indigo-600 py-2 px-4
+                                      text-sm font-medium text-white shadow-sm
+                                      hover:bg-indigo-700 focus:outline-none
+                                      focus:ring-2 focus:ring-indigo-500
+                                      focus:ring-offset-2">Anuluj</button>
+                                    <button type="submit" name="add-client" class="inline-flex
+                                      justify-center rounded-md border
+                                      border-transparent bg-indigo-600 py-2 px-4
+                                      text-sm font-medium text-white shadow-sm
+                                      hover:bg-indigo-700 focus:outline-none
+                                      focus:ring-2 focus:ring-indigo-500
+                                      focus:ring-offset-2">Dodaj</button>
+                                      {% if messages %}
+
+                                        {% for message in messages %}
+                                          <a{% if message.tags %} class="error"{% endif %} hidden>{{ message }}</a>
+                                        {% endfor %}
+
+                                    {% endif %}
+
+
+                                  </div>
+                                </div>
+                              </form>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </p>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+       <script>
+
+          // NAVBAR
+          const btn = document.querySelector("button.mobile-menu-button");
+          const menu = document.querySelector("#mobile-menu");
+
+          menu.classList.toggle("hidden");
+
+          btn.addEventListener("click", () => {
+              menu.classList.toggle("hidden");
+          });
+          // NAVBAR
+
+          var openmodal = document.querySelectorAll('.modal-open')
+          for (var i = 0; i < openmodal.length; i++) {
+            openmodal[i].addEventListener('click', function(event){
+            event.preventDefault()
+            toggleModal()
+            })
+          }
+          
+          const overlay = document.querySelector('.modal-overlay')
+          overlay.addEventListener('click', toggleModal)
+          
+          var closemodal = document.querySelectorAll('.modal-close')
+          for (var i = 0; i < closemodal.length; i++) {
+            closemodal[i].addEventListener('click', toggleModal)
+          }
+          
+          document.onkeydown = function(evt) {
+            evt = evt || window.event
+            var isEscape = false
+            if ("key" in evt) {
+            isEscape = (evt.key === "Escape" || evt.key === "Esc")
+            } else {
+            isEscape = (evt.keyCode === 27)
+            }
+            if (isEscape && document.body.classList.contains('modal-active')) {
+            toggleModal()
+            }
+          };
+          
+          
+          function toggleModal () {
+            const body = document.querySelector('body')
+            const modal = document.querySelector('.modal')
+            modal.classList.toggle('opacity-0')
+            modal.classList.toggle('pointer-events-none')
+            body.classList.toggle('modal-active')
+          }
+
+          function clearForm() {
+            document.getElementById("myForm").reset();
+          }
+
+
+
+          const streetAdressInput = document.querySelector('#street-address')
+            streetAdressInput.addEventListener('input', function () {
+
+            var autocomplete;
+            var id = 'location'
+            
+            var options = {
+              types: ['geocode'],
+              componentRestrictions: {country: "pl"},
+              language:"pl"
+            };
+
+            autocomplete = new google.maps.places.Autocomplete((streetAdressInput), options)
+        });
+
+        streetAdressInput.addEventListener('keydown', function(e) {
+          const gPlaceChoices = document.querySelector('.pac-container')
+          // No choices element ? 
+          if (null === gPlaceChoices || streetAdressInput.value == '') {
+              return
+          }
+          // Get choices visivility
+          let visibility = window.getComputedStyle(gPlaceChoices).display
+          // In this case, enter key will do nothing
+          if ('none' !== visibility && e.keyCode === 13) {
+              e.preventDefault();
+          }
+      })
+
+      if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+      }
+
+      isError = document.querySelector('.error')
+
+      if (isError) {
+        Toastify({
+        text: "Nie udało się dodać klienta!",
+        duration: 5000,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "#db3623",
+        },
+      }).showToast();
+    }
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="pl" class="h-full bg-gray-100">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalacje Faraday</title>
+    <link rel="icon" type="image/x-icon" href="https://faraday.com.pl/wp-content/uploads/2023/01/cropped-293657772_565675205229534_399092921984716634_n-1-32x32.png">
+    <style>
+      .modal {
+        transition: opacity 0.25s ease;
+      }
+      body.modal-active {
+        overflow-x: hidden;
+        overflow-y: hidden !important;
+      }
+
+      html {
+        overflow: hidden !important;
+      }
+
+      .pac-container {
+        box-shadow: none;
+        /* border-color: rgb(79, 70, 229); */
+        border-right: 1px solid rgb(79, 70, 229);
+        border-bottom: 1px solid rgb(79, 70, 229);
+        border-left: 1px solid rgb(79, 70, 229);
+      }
+
+      body > div > div:nth-child(1) > div {
+        height: 100vh !important;
+        padding-bottom: 0 !important;
+      }
+
+      #main-page-btn:hover {
+        transform: translateY(-5px);
+      }
+
+    </style>
+    <link rel="stylesheet" id="google-fonts-1-css" href="https://fonts.googleapis.com/css?family=Roboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CRoboto+Slab%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CBebas+Neue%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7CMontserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&amp;display=swap&amp;subset=latin-ext&amp;ver=6.1.1" media="all">
+
+    <script type="text/javascript" src="https://cdn.rawgit.com/jieter/Leaflet.encoded/68e78190/Polyline.encoded.js"
+crossorigin=""></script>
+    {% tailwind_css %}
+
+  </head>
+
+  <body class="w-screen">
+    <nav class="bg-white">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center py-1">
+          <div class="flex items-center">
+            <img src="https://faraday.com.pl/wp-content/uploads/2023/01/cropped-293657772_565675205229534_399092921984716634_n.png" alt="Logo" class="mr-4" style="height: 4.5rem;">
+          </div>
+          <div class="text-black text-center font-bold" style="font-family: 'Bebas Neue', Sans-serif; font-weight: normal; font-size: 21px;">Nasze instalacje</div>
+
+            <a href="https://faraday.com.pl/" id="main-page">
+            <button id="main-page-btn" class="btn text-white border-none ease-out duration-300 px-4 py-3 text-sm font-medium text-center overflow-clip" style="background-color: #2B982C; font-family: 'Bebas Neue', Sans-serif; font-weight: normal; font-size: 19px;" >Strona główna</button>
+          </a>
+        </div>
+      </div>
+    </nav>
+    
+    
+    <div class="fixed w-screen">
+      {{map|safe}}   
+    </div>
+  </body>
+</html>

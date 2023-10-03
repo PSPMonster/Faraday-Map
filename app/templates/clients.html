@@ -1,0 +1,271 @@
+{% load tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Klienci</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+
+	<!-- <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel=" stylesheet"> -->
+
+	<!--Regular Datatables CSS-->
+	<link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet">
+	<!--Responsive Extension Datatables CSS-->
+	<link href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css" rel="stylesheet">
+
+	<style>
+		/*Overrides for Tailwind CSS */
+
+		/*Form fields*/
+		.dataTables_wrapper select,
+		.dataTables_wrapper .dataTables_filter input {
+			color: #4a5568;
+			/*text-gray-700*/
+			padding-left: 1rem;
+			/*pl-4*/
+			padding-right: 1rem;
+			/*pl-4*/
+			padding-top: .5rem;
+			/*pl-2*/
+			padding-bottom: .5rem;
+			/*pl-2*/
+			line-height: 1.25;
+			/*leading-tight*/
+			border-width: 2px;
+			/*border-2*/
+			border-radius: .25rem;
+			border-color: #edf2f7;
+			/*border-gray-200*/
+			background-color: #edf2f7;
+			/*bg-gray-200*/
+		}
+
+		/*Row Hover*/
+		table.dataTable.hover tbody tr:hover,
+		table.dataTable.display tbody tr:hover {
+			background-color: #ebf4ff;
+			/*bg-indigo-100*/
+		}
+
+		/*Pagination Buttons*/
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Current selected */
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #4e49e5 !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+		}
+
+		/*Pagination Buttons - Hover */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			color: #fff !important;
+			/*text-white*/
+			box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06);
+			/*shadow*/
+			font-weight: 700;
+			/*font-bold*/
+			border-radius: .25rem;
+			/*rounded*/
+			background: #667eea !important;
+			/*bg-indigo-500*/
+			border: 1px solid transparent;
+			/*border border-transparent*/
+
+		}
+
+        #client_table_previous, #client_table_next{
+            transition: 0.3s ease-out;
+         }
+
+        #client_table_previous:hover, #client_table_next:hover {
+            color: #fff !important;
+            background-color: #4e49e5;
+            
+        }
+
+		/*Add padding to bottom border */
+		table.dataTable.no-footer {
+			border-bottom: 1px solid #e2e8f0;
+			/*border-b-1 border-gray-300*/
+			margin-top: 0.75em;
+			margin-bottom: 0.75em;
+		}
+
+		/*Change colour of responsive icon*/
+		table.dataTable.dtr-inline.collapsed>tbody>tr>td:first-child:before,
+		table.dataTable.dtr-inline.collapsed>tbody>tr>th:first-child:before {
+			background-color: #667eea !important;
+			/*bg-indigo-500*/
+		}
+
+	</style>
+
+
+	{% tailwind_css %}
+</head>
+
+<body class="bg-gray-100 text-gray-900 tracking-wider leading-normal">
+
+    <nav class="bg-gray-800 mobile-menu static w-full top-0 z-50">
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		  <div class="flex h-16 items-center justify-center">
+			<div class="flex items-center">
+			  <div class="hidden md:block">
+				<div class="ml-10 flex items-baseline space-x-4">
+				  <a href="{% url 'administrator' %}" class="text-gray-300 hover:bg-gray-700
+				  hover:text-white px-3 py-2 rounded-md text-sm font-medium">Mapa</a>
+  
+				  <a href="{% url 'klienci' %}" class="bg-gray-900 text-white hover:bg-gray-700
+					hover:text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Klienci</a>
+				  <a href="#" class="text-gray-300 hover:bg-gray-700
+					hover:text-white px-3 py-2 rounded-md text-sm font-medium">Kalendarz</a>
+				  <a href="#" class="text-gray-300 hover:bg-gray-700
+					hover:text-white px-3 py-2 rounded-md text-sm font-medium">Raporty</a>
+				  <a href="{% url 'wyloguj' %}" class="text-gray-300 border-none bg-indigo-600 border
+				   hover:bg-indigo-800 ease-out duration-300
+					hover:text-white px-3 py-2 text-sm font-medium">Wyloguj się</a>
+				</div>
+			  </div>
+			</div>
+
+			<div class="-mr-2 flex md:hidden">
+			  <!-- Mobile menu button -->
+			  <button type="button" class="mobile-menu-button inline-flex
+				items-center justify-center rounded-md bg-gray-800 p-2
+				text-gray-400 hover:bg-gray-700 hover:text-white
+				focus:outline-none focus:ring-2 focus:ring-white
+				focus:ring-offset-2 focus:ring-offset-gray-800"
+				aria-controls="mobile-menu" aria-expanded="false">
+				<span class="sr-only">Otwórz menu</span>
+  
+				<svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+				  fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+				  stroke="currentColor" aria-hidden="true">
+				  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75
+					6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+				  </svg>
+  
+				  <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg"
+					fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+					stroke="currentColor" aria-hidden="true">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M6
+					  18L18 6M6 6l12 12" />
+					</svg>
+				  </button>
+				</div>
+			  </div>
+			</div>
+  
+			<!-- Mobile menu, show/hide based on menu state. -->
+			<div class="md:hidden" id="mobile-menu">
+			  <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+				<a href="{% url 'administrator' %}" class="text-gray-300 hover:bg-gray-700
+				hover:text-white block px-3 py-2 rounded-md text-base
+				font-medium">Mapa</a>
+
+				<a href="{% url 'klienci' %}" class="bg-gray-900 text-white block px-3 py-2
+				rounded-md text-base font-medium">Klienci</a>
+  
+				<a href="#" class="text-gray-300 hover:bg-gray-700
+				  hover:text-white block px-3 py-2 rounded-md text-base
+				  font-medium">Kalendarz</a>
+  
+				<a href="#" class="text-gray-300 hover:bg-gray-700
+				  hover:text-white block px-3 py-2 rounded-md text-base
+				  font-medium">Raporty</a>
+  
+				<a href="{% url 'wyloguj' %}" class="text-gray-300 bg-indigo-800
+				hover:text-white block px-3 py-2 rounded-md text-base
+				font-medium">Wyloguj się</a>
+			  </div>
+			</div>
+		  </nav>
+
+	<!--Container-->
+	<div class="container w-full md:w-4/5 xl:w-3/5  mx-auto px-2">
+		<!--Card-->
+		<div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+			<table id="client_table" class="stripe hover" style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+				<thead>
+					<tr>
+						<th data-priority="1">Imie i Nazwisko</th>
+						<th data-priority="2">Instalacja</th>
+						<th data-priority="3">Data instalacji</th>
+						<th data-priority="4">Adres</th>
+						<th data-priority="5">Telefon</th>
+					</tr>
+				</thead>
+				<tbody>
+                    {% for client in all_clients %}
+					<tr>
+						<td>{{ client.full_name }}</td>
+						<td>{{ client.installation }}</td>
+						<td>{{ client.installation_date }}</td>
+						<td>{{ client.address }}</td>
+						<td>{{ client.phone_number }}</td>
+					</tr>
+                    {% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<!--/Card-->
+
+
+	</div>
+	<!--/container-->
+
+	<!-- jQuery -->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+	<!--Datatables -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+	<script>
+		$(document).ready(function() {
+
+			var table = $('#client_table').DataTable({
+					responsive: true
+				})
+				.columns.adjust()
+				.responsive.recalc();
+		});
+
+        
+
+
+        // NAVBAR
+        const btn = document.querySelector("button.mobile-menu-button");
+        const menu = document.querySelector("#mobile-menu");
+
+        menu.classList.toggle("hidden");
+
+        btn.addEventListener("click", () => {
+            menu.classList.toggle("hidden");
+        });
+        // NAVBAR
+	</script>
+
+</body>
+
+</html>
